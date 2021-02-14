@@ -1,0 +1,6 @@
+include tox.ini
+include CHANGES.md
+include tests/*.py
+include tests/test-site/*.lektorproject
+recursive-include tests/test-site *.lr *.css *.html *.ini *.jpg *.pdf
+
