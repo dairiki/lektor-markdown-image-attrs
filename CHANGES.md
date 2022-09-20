@@ -1,6 +1,6 @@
 ## Changelog
 
-### Next Release
+### Release 0.2 (2022-09-20)
 
 - Fix to work with Lektor 3.4
 - Convert packaging to use `hatch`.
