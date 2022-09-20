@@ -41,6 +41,7 @@ classifiers = [
     "Topic :: Text Processing :: Markup :: HTML",
     "Topic :: Text Processing :: Markup :: Markdown",
 ]
+requires-python = ">=3.7"
 
 [project.entry-points."lektor.plugins"]
 markdown-image-attrs = "lektor_markdown_image_attrs:LektorPlugin"
