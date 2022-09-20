@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Extend Markdown syntax to allow setting arbitrary HTML attributes
 on images and links.
 
@@ -53,7 +52,7 @@ def extract_attrs_from_title(title):
     return attrs, title
 
 
-class MarkdownRendererMixin(object):
+class MarkdownRendererMixin:
     """This allows one to set attributes on image and link tags by
     including them in the markdown title for the image or link.
 
@@ -69,7 +68,7 @@ class MarkdownRendererMixin(object):
     """
     def link(self, link, title, text):
         attrs, title = extract_attrs_from_title(title)
-        markup = super(MarkdownRendererMixin, self).link(link, title, text)
+        markup = super().link(link, title, text)
         if attrs:
             # FIXME: hackish
             markup = markup.replace(' href=', ' %s href=' % attrs)
@@ -78,7 +77,7 @@ class MarkdownRendererMixin(object):
     def image(self, src, title, text):
         attrs, title = extract_attrs_from_title(title)
 
-        markup = super(MarkdownRendererMixin, self).image(src, title, text)
+        markup = super().image(src, title, text)
         if attrs:
             # FIXME: hackish
             markup = markup.replace(' src=', ' %s src=' % attrs)
@@ -88,8 +87,8 @@ class MarkdownRendererMixin(object):
 class LektorPlugin(lektor.pluginsystem.Plugin):
     name = 'Lektor Markdown Image and Link Attributes'
     description = (
-        u'Extend Lektor’s Markdown syntax to allow setting '
-        u'arbitrary HTML attributes on images and links.')
+        'Extend Lektor’s Markdown syntax to allow setting '
+        'arbitrary HTML attributes on images and links.')
 
     def on_markdown_config(self, config, **extra):
         # XXX: This is fragile, but I'm not sure how better to do this.
