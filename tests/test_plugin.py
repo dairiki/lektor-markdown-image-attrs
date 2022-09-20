@@ -1,5 +1,4 @@
-import re
-
+from bs4 import BeautifulSoup
 import lektor.context
 import lektor.project
 import pytest
@@ -67,12 +66,17 @@ def test_extract_attrs_from_title(title, expected):
 @pytest.mark.usefixtures('our_plugin')
 def test_render_image(render_markdown):
     rendered = render_markdown('![cat](cat.jpg "Fluffy <class=img>")')
-    assert re.search(r"<img [^>]*\bclass=img\b", rendered)
-    assert re.search(r'<img [^>]*\bsrc="cat.jpg"', rendered)
+    soup = BeautifulSoup(rendered, "html.parser", multi_valued_attributes=None)
+    assert soup.img["class"] == "img"
+    assert soup.img["src"] == "cat.jpg"
+    assert soup.img["title"] == "Fluffy"
 
 
 @pytest.mark.usefixtures('our_plugin')
 def test_render_link(render_markdown):
     rendered = render_markdown('[cat](cat.jpg "Fluffy <class=img>")')
-    assert re.search(r"<a [^>]*\bclass=img\b", rendered)
-    assert re.search(r'<a [^>]*\bhref="cat.jpg"', rendered)
+
+    soup = BeautifulSoup(rendered, "html.parser", multi_valued_attributes=None)
+    assert soup.a["class"] == "img"
+    assert soup.a["href"] == "cat.jpg"
+    assert soup.a["title"] == "Fluffy"
