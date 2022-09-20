@@ -68,6 +68,17 @@ Here’s a photo of [my cat][]:  ![fluffy][]
 [my cat]: <http://fluffy.example.org>   'Fluffy’s website <class="external link">'
 ```
 
+## Testing
+
+We now use [hatch](https://hatch.pypa.io/latest/) for packaging and development.
+
+To run all tests, including under a full matrix of python and lektor
+versions, as well as combined coverage tests:
+
+```sh
+hatch run cover:full
+```
+
 ## Acknowledgments
 
 Ideas were gleaned from this [blog post](https://www.xaprb.com/blog/how-to-style-images-with-markdown/) by Baron Schwartz.

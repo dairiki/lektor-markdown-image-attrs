@@ -1,7 +1,3 @@
 *~
-*.pyc
-*.pyo
-*.egg-info
-/.eggs/
-/.tox/
+__pycache__/
 /.coverage*
