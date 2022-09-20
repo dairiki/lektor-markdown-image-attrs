@@ -72,7 +72,21 @@ dependencies = [
     "lektor",
 ]
 
-scripts = { test = ["coverage run -m pytest tests", "coverage report --fail-under=100"] }
+[tool.hatch.envs.test]
+
+[[tool.hatch.envs.test.matrix]]
+# python = ["37", "38", "39", "310"]
+python = ["310"]
+lektor = ["lektor33", "lektor34"]
+
+[tool.hatch.envs.test.overrides]
+matrix.lektor.dependencies = [
+    { value = "lektor<3.4.0", if = ["lektor33"] },
+    { value = "lektor>=3.4.0b2", if = ["lektor34"] },
+]
+
+[tool.hatch.envs.test.scripts]
+run = "coverage run --parallel -m pytest tests"
 
 [tool.coverage.run]
 source = ["lektor_markdown_image_attrs"]
