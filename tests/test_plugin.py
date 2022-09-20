@@ -1,3 +1,6 @@
+from inspect import Parameter
+from inspect import Signature
+
 from bs4 import BeautifulSoup
 import lektor.context
 import lektor.project
@@ -60,23 +63,41 @@ def render_markdown(lektor_context):
     ('hidden class=img', (None, "hidden class=img")),
 ])
 def test_extract_attrs_from_title(title, expected):
-    assert extract_attrs_from_title(title) == expected
+    expected_attrs, expected_title = expected
+    sig = Signature([Parameter("title", Parameter.POSITIONAL_OR_KEYWORD)])
+    bound = sig.bind(title)
+
+    assert extract_attrs_from_title(bound) == expected_attrs
+    assert bound.arguments["title"] == expected_title
 
 
+@pytest.mark.parametrize("markdown, expected_attrs", [
+    ('![cat](cat.jpg "Fluffy <class=img>")', [
+        ("class", "img"), ("src", "cat.jpg"), ("title", "Fluffy")
+    ]),
+    ('![cat](cat.jpg)', [
+        ("class", None), ("src", "cat.jpg"), ("title", None)
+    ]),
+])
 @pytest.mark.usefixtures('our_plugin')
-def test_render_image(render_markdown):
-    rendered = render_markdown('![cat](cat.jpg "Fluffy <class=img>")')
+def test_render_image(markdown, expected_attrs, render_markdown):
+    rendered = render_markdown(markdown)
     soup = BeautifulSoup(rendered, "html.parser", multi_valued_attributes=None)
-    assert soup.img["class"] == "img"
-    assert soup.img["src"] == "cat.jpg"
-    assert soup.img["title"] == "Fluffy"
+    for name, value in expected_attrs:
+        assert soup.img.get(name) == value
 
 
+@pytest.mark.parametrize("markdown, expected_attrs", [
+    ('[cat](cat.jpg "Fluffy <class=img>")', [
+        ("class", "img"), ("href", "cat.jpg"), ("title", "Fluffy")
+    ]),
+    ('[link](http://google.com/)', [
+        ("href", "http://google.com/"), ("class", None), ("title", None)
+    ]),
+])
 @pytest.mark.usefixtures('our_plugin')
-def test_render_link(render_markdown):
-    rendered = render_markdown('[cat](cat.jpg "Fluffy <class=img>")')
-
+def test_render_link(markdown, expected_attrs, render_markdown):
+    rendered = render_markdown(markdown)
     soup = BeautifulSoup(rendered, "html.parser", multi_valued_attributes=None)
-    assert soup.a["class"] == "img"
-    assert soup.a["href"] == "cat.jpg"
-    assert soup.a["title"] == "Fluffy"
+    for name, value in expected_attrs:
+        assert soup.a.get(name) == value

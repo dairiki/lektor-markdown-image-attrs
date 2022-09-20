@@ -2,8 +2,12 @@
 on images and links.
 
 """
+from __future__ import annotations
+
+import inspect
 import re
 
+import mistune
 import lektor.pluginsystem
 
 
@@ -41,15 +45,31 @@ implicit_attrs_re = re.compile(
     '''.format(**_bits), re.X | re.I)
 
 
-def extract_attrs_from_title(title):
+def extract_attrs_from_title(bound: inspect.BoundArguments) -> str | None:
+    """Extract explict HTML attributes from title parameter.
+
+    If such attributes are found, the bound arguments in ``bound``
+    are modified in-place, and the extracted attributes are returned.
+    """
+    arguments = bound.arguments
     attrs = None
+    title = arguments.get("title")
     if title:
         m = (trailing_attrs_re.search(title)
              or implicit_attrs_re.match(title))
         if m is not None:
             attrs = m.group('attrs')
-            title = title[:m.start()] if m.start() > 0 else None
-    return attrs, title
+            arguments["title"] = title[:m.start()] if m.start() > 0 else None
+    return attrs
+
+
+try:
+    _renderer = mistune.HTMLRenderer()
+except AttributeError:
+    _renderer = mistune.Renderer()
+LINK_ARGS = inspect.signature(_renderer.link)
+IMAGE_ARGS = inspect.signature(_renderer.image)
+del _renderer
 
 
 class MarkdownRendererMixin:
@@ -66,18 +86,19 @@ class MarkdownRendererMixin:
         [fluffy]: other-cat.jpg (Not Fluffy <style="width: 25px;">)
 
     """
-    def link(self, link, title, text):
-        attrs, title = extract_attrs_from_title(title)
-        markup = super().link(link, title, text)
+    def link(self, *args, **kwargs):
+        bound = LINK_ARGS.bind(*args, **kwargs)
+        attrs = extract_attrs_from_title(bound)
+        markup = super().link(*bound.args, *bound.kwargs)
         if attrs:
             # FIXME: hackish
             markup = markup.replace(' href=', ' %s href=' % attrs)
         return markup
 
-    def image(self, src, title, text):
-        attrs, title = extract_attrs_from_title(title)
-
-        markup = super().image(src, title, text)
+    def image(self, *args, **kwargs):
+        bound = IMAGE_ARGS.bind(*args, **kwargs)
+        attrs = extract_attrs_from_title(bound)
+        markup = super().image(*bound.args, *bound.kwargs)
         if attrs:
             # FIXME: hackish
             markup = markup.replace(' src=', ' %s src=' % attrs)

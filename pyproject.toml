@@ -100,5 +100,8 @@ run = "coverage run --parallel -m pytest tests"
 source = ["lektor_markdown_image_attrs"]
 
 [[tool.mypy.overrides]]
-module = "lektor.*"
+module = [
+    "lektor.*",
+    "mistune.*",
+]
 ignore_missing_imports = true
