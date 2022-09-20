@@ -1,5 +1,78 @@
 [build-system]
-requires = ["setuptools>=42", "wheel", "setuptools_scm[toml]>=3.4"]
-build-backend = "setuptools.build_meta"
+requires = [
+    "hatchling>=1.9.0",
+    "hatch-vcs",
+]
+build-backend = "hatchling.build"
+
+[project]
+name = "lektor-markdown-image-attrs"
+dynamic = ["version"]
+description = """\
+    Extend Lektor’s Markdown syntax to allow setting \
+    arbitrary HTML attributes on images and links.\
+    """
+readme = "README.md"
+license = "MIT"
+authors = [
+    { name = "Jeff Dairiki", email = "dairiki@dairiki.org" },
+]
+keywords = [
+    "Lektor",
+    "attributes",
+    "html",
+    "image",
+    "markdown",
+    "plugin",
+    "style",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Plugins",
+    "Environment :: Web Environment",
+    "Framework :: Lektor",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Topic :: Text Processing :: Markup :: HTML",
+    "Topic :: Text Processing :: Markup :: Markdown",
+]
+
+[project.entry-points."lektor.plugins"]
+markdown-image-attrs = "lektor_markdown_image_attrs:LektorPlugin"
+
+[project.urls]
+Homepage = "https://github.com/dairiki/lektor-markdown-image-attrs"
+
+[tool.hatch.version]
+source = "vcs"
+
+[tool.hatch.build]
+include = [
+    "/lektor_markdown_image_attrs.py",
+]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/lektor_markdown_image_attrs.py",
+    "/CHANGES.md",
+    "/tests",
+]
 
 [tool.setuptools_scm]
+
+[tool.hatch.envs.default]
+dependencies = [
+    "pytest",
+    "coverage",
+    "lektor",
+]
+
+scripts = { test = ["coverage run -m pytest tests", "coverage report --fail-under=100"] }
+
+[tool.coverage.run]
+source = ["lektor_markdown_image_attrs"]

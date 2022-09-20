@@ -1,4 +1,0 @@
-include tox.ini
-include CHANGES.md
-include tests/*.py
-
