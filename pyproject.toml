@@ -72,6 +72,12 @@ dependencies = [
     "lektor",
 ]
 
+[tool.hatch.envs.dev]
+extra-dependencies = [
+    "flake8",
+    "mypy==0.971",
+]
+
 [tool.hatch.envs.test]
 
 [[tool.hatch.envs.test.matrix]]
@@ -90,3 +96,7 @@ run = "coverage run --parallel -m pytest tests"
 
 [tool.coverage.run]
 source = ["lektor_markdown_image_attrs"]
+
+[[tool.mypy.overrides]]
+module = "lektor.*"
+ignore_missing_imports = true

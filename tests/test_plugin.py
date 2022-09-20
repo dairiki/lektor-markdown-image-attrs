@@ -11,15 +11,13 @@ from lektor_markdown_image_attrs import (
 
 
 @pytest.fixture
-def test_site(tmp_path):
-    return test_site
-
-
-@pytest.fixture
 def lektor_env(tmp_path):
     test_site = tmp_path
     project_file = test_site / 'test_site.lektorproject'
     project_file.touch()
+    root_contents = test_site / "content/contents.lr"
+    root_contents.parent.mkdir()
+    root_contents.touch()
     proj = lektor.project.Project.from_path(str(test_site))
     return proj.make_env(load_plugins=False)
 
@@ -35,14 +33,19 @@ def our_plugin(lektor_env):
 
 @pytest.fixture
 def lektor_context(lektor_env):
-    with lektor.context.Context(pad=lektor_env.new_pad()):
-        yield
+    with lektor.context.Context(pad=lektor_env.new_pad()) as ctx:
+        yield ctx
 
 
 @pytest.fixture
 def render_markdown(lektor_context):
+    record = lektor_context.pad.root
+
     def render_markdown(source):
-        md = lektor.markdown.Markdown(source)
+        try:
+            md = lektor.markdown.Markdown(source, record, field_options={})
+        except TypeError:       # Lektor < 3.4
+            md = lektor.markdown.Markdown(source, record)
         return md.html
     return render_markdown
 
