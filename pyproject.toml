@@ -67,71 +67,59 @@ include = [
     "/tests",
 ]
 
-[tool.setuptools_scm]
-
 [tool.hatch.envs.default]
 dependencies = [
     "pytest",
     "beautifulsoup4",
-    "coverage",
+    "coverage[toml]",
     "lektor",
 ]
-
 [tool.hatch.envs.default.scripts]
-pytest = [
+test = [
     "pip freeze | paste -sd , -",
-    "coverage run --parallel -m pytest tests",
+    "coverage run -m pytest tests",
 ]
 full = [
+    # all tests
     "hatch run lint:all",
-    "hatch run cover:full",
+    "hatch run cover-clean",
+    "hatch run test:test",
+    "hatch run cover-report",
+]
+cover = [
+    # test under all versions of lektor, report combine coverage
+    "cover-clean",
+    "hatch run lektors:test",
+    "cover-report",
+]
+cover-clean = [
+    "- coverage combine",
+    "coverage erase",
+]
+cover-report = [
+    "- coverage combine --append",
+    "coverage report --fail-under=100",
 ]
 
 [tool.hatch.envs.dev]
 extra-dependencies = [
     "flake8",
+    "flake8-bugbear",
     "mypy==0.971",
     "types-beautifulsoup4",
 ]
 
-[tool.hatch.envs.test]
-
-[[tool.hatch.envs.test.matrix]]
+[[tool.hatch.envs.lektors.matrix]]
 lektor = ["lektor33", "lektor34"]
 
 [[tool.hatch.envs.test.matrix]]
 python = ["37", "38", "39", "310"]
 lektor = ["lektor33", "lektor34"]
 
-[tool.hatch.envs.test.overrides]
+[tool.hatch.envs.default.overrides]
 matrix.lektor.dependencies = [
     { value = "lektor<3.4.0", if = ["lektor33"] },
     { value = "lektor>=3.4.0b2", if = ["lektor34"] },
-]
-
-[tool.hatch.envs.cover]
-detached = true
-dependencies = [
-    "coverage[toml]",
-]
-[tool.hatch.envs.cover.scripts]
-clean = [
-    "- coverage combine",
-    "coverage erase",
-    ]
-report = [
-    "- coverage combine --append",
-    "coverage report --fail-under=100",
-    ]
-test = [
-    "clean",
-    "hatch run -python test:pytest",
-    "report",
-]
-full = [
-    "clean",
-    "hatch run +python +lektor test:pytest",
-    "report",
 ]
 
 [tool.hatch.envs.lint]
@@ -141,16 +129,17 @@ dependencies = [
     "twine",
 ]
 [tool.hatch.envs.lint.scripts]
-check = [
+twine-check = [
     "hatch build -t wheel -c",
     "twine check dist/*",
 ]
 all = [
-    "check",
+    "twine-check",
     "flake8",
 ]
 
 [tool.coverage.run]
+parallel = true
 source = ["lektor_markdown_image_attrs"]
 
 [[tool.mypy.overrides]]

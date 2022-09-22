@@ -76,7 +76,14 @@ To run all tests, including under a full matrix of python and lektor
 versions, as well as combined coverage tests:
 
 ```sh
-hatch run cover:full
+hatch run full
+```
+
+The `dev` environment specifies additional dependencies useful for
+development.  E.g. I start emacs via:
+
+```sh
+hatch run dev:emacs lektor_markdown_image_attrs.py &
 ```
 
 ## Acknowledgments
