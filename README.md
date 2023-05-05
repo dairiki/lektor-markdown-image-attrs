@@ -4,6 +4,7 @@
 [![PyPI Supported Python Versions](https://img.shields.io/pypi/pyversions/lektor-markdown-image-attrs.svg)](https://pypi.python.org/pypi/lektor-markdown-image-attrs/)
 [![GitHub license](https://img.shields.io/github/license/dairiki/lektor-markdown-image-attrs)](https://github.com/dairiki/lektor-markdown-image-attrs/blob/master/LICENSE)
 [![GitHub Actions (Tests)](https://github.com/dairiki/lektor-markdown-image-attrs/workflows/Tests/badge.svg)](https://github.com/dairiki/lektor-markdown-image-attrs/actions)
+[![Trackgit Views](https://us-central1-trackgit-analytics.cloudfunctions.net/token/ping/lhauwgtqzflqag3ta1jl)](https://trackgit.com)
 
 This plugin hacks up Lektor’s Markdown renderer to add syntax which allows
 arbitrary HTML attributes to be set on image and link tags.
